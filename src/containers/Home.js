@@ -12,7 +12,7 @@ function Home() {
         .then(function(response) {
             const footballResponse = response.data.matches;
             setFootballData(footballResponse);
-            console.log('football response: ', response);
+            // console.log('football response: ', response);
         })
         .catch(function(error) {
             console.warn(error);
@@ -24,87 +24,57 @@ function Home() {
         .then(function(response) {
             const covidResponse = response.data;
             setCovidData(covidResponse);
-            console.log('covid response: ', response);
+            // console.log('covid response: ', response);
         })
         .catch(function(error) {
             console.warn(error);
         })
     }, []);
 
-    let match_day = "";
+    let footballArray = [];
+    let footballArray2 = [];
+    let covidArray = [];
+    let dateArray = [];
 
-    // console.log("key: ", process.env.REACT_APP_API_KEY);
-    // console.log("ticketmasterData: ", ticketmasterData);
-    console.log("covidData: ", covidData);
-    // console.log("check key: " + API_STRING);
-    // console.log("check2: " + API_KEY_FOOTBALL);
-    console.log("footballData: ", footballData);
+    {covidData.map((day, i) => {
+        if (i%11 == 0) {
+            covidArray.push({date: day.Date.substr(0, 10), cases: day.Cases});
+        }
+    })}
+
+    {footballData.map((match, i) => {
+        footballArray.push({date: match.utcDate.substr(0, 10), home: match.homeTeam.name, away: match.awayTeam.name, score: match.score.fullTime.homeTeam + "-" + match.score.fullTime.awayTeam});
+        if (i === 0 || footballArray[i].date !== footballArray[i-1].date) {
+            footballArray2.push([footballArray[i]]);
+            var j = 0;
+            while (covidArray[j].date != footballArray[i].date) { j++; }
+            dateArray.push({date: footballArray[i].date, football: footballArray2[footballArray2.length-1], covid: covidArray[j]});
+        }
+        else {
+            footballArray2[footballArray2.length-1].push(footballArray[i]);
+        }
+    })}
+
     return (
         <main className="Home">
             <h1>Data about Premier League and Covid in UK</h1>
-            <div className="Data">
+            <div>
                 <div>
-                    <h2>Premier League Data</h2>
-                    {/* {covidData.map((day, i) => {
-                        switch(i%11) {
-                            case 0:
-                                {footballData.map((match, j) => {
-                                    // console.log("covid: " + day.Date);
-                                    // console.log("football: " + match.utcDate);
-                                    switch(match.utcDate.substr(0, 10) === day.Date.substr(0, 10)) {
-                                        case true:
-                                            console.log("True");
-                                            match_day = match.utcDate.substr(0, 10);
-                                            return <div key={j}>
-                                                    <h3>{match_day}</h3>
-                                                    <h4>PL Matches</h4>
-                                                    <p>Match: {match.homeTeam.name} vs. {match.awayTeam.name}</p>
-                                                    <p>Score: {match.score.fullTime.homeTeam} - {match.score.fullTime.awayTeam}</p>
-                                                   </div>;
-                                        default:
-                                            return null;
-                                    }
-                                })}
-                                return <div key={i}>
-                                        <h4>Covid Cases</h4>
-                                        <p>Total Cases: {day.Cases}</p>
-                                       </div>;
-                            default:
-                                return null;
-                        }
-                        
-                    })} */}
-                    {footballData.map((match, i) => {
-                        switch(match.utcDate.substr(0, 10) === match_day) {
-                            case false:
-                                match_day = match.utcDate.substr(0, 10);
-                                return <div key={i}>
-                                        <h3>{match.utcDate.substr(0, 10)}</h3>
-                                        <h4>PL Matches</h4>
-                                        <p>Match: {match.homeTeam.name} vs. {match.awayTeam.name}</p>
-                                        <p>Score: {match.score.fullTime.homeTeam} - {match.score.fullTime.awayTeam}</p>
-                                       </div>;
-                            default:
-                                return <div key={i}>
-                                        <p>Match: {match.homeTeam.name} vs. {match.awayTeam.name}</p>
-                                        <p>Score: {match.score.fullTime.homeTeam} - {match.score.fullTime.awayTeam}</p>
-                                       </div>;
-                        }
-                    })}
-                </div>
-                <div>
-                    <h2>Covid Data</h2>
-                    {covidData.map((day, i) => {
-                        switch(i%11) {
-                            case 0:
-                                return <div key={i}>
-                                        <h4>Covid Cases</h4>
-                                        <p>Total Cases: {day.Cases}</p>
-                                       </div>;
-                            default:
-                                return null;
-                        }
-                        
+                    {dateArray.map((day, i) => {
+                        console.log(day)
+                        return <div key={i}>
+                            <h2>Matchday {i+1}: {day.date}</h2>
+                            <div className="Data">
+                                <div className="FootballData">
+                                    {day.football.map((match, i) => {
+                                        return <p>{match.home} {match.score} {match.away}</p>;
+                                    })}
+                                </div>
+                                <div className="CovidData">
+                                    <p>Total Covid Cases: {day.covid.cases}</p>
+                                </div>
+                            </div>
+                        </div>
                     })}
                 </div>
             </div>
