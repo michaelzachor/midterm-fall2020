@@ -8,7 +8,7 @@ function Home() {
     const history = useHistory();
     const [covidData, setCovidData] = useState([]);
     const [footballData, setFootballData] = useState([]);
-    const [day, setDay] = useState('25');
+    const [day, setDay] = useState(null);
     let covidArray = [];
 
     /* GET FOOTBALL DATA */
@@ -59,17 +59,31 @@ function Home() {
         }
     })}
 
+    const {
+        cases,
+    } = useMemo(() => {
+        let cases;
+        if (covidData) {
+            cases = covidArray
+        }
+        return {
+            cases
+        }
+    })
+
     /* KEEP TRACK OF USEFUL FOOTBALL DATA */
     const { 
         date,
         home, 
         away,
-        score,
+        homeScore,
+        awayScore,
     } = useMemo(() => {
         let date = '';
         let home = [];
         let away = [];
-        let score = [];
+        let homeScore = [];
+        let awayScore = [];
 
         if(footballData[0]) {
             // console.log(footballData[0]);
@@ -77,24 +91,49 @@ function Home() {
             for (var game in footballData) {
                 home.push(footballData[game].homeTeam.name);
                 away.push(footballData[game].awayTeam.name);
-                score.push(`${footballData[game].score.fullTime.homeTeam}-${footballData[game].score.fullTime.awayTeam}` )
+                // score.push(`${footballData[game].score.fullTime.homeTeam}-${footballData[game].score.fullTime.awayTeam}` )
+                homeScore.push(footballData[game].score.fullTime.homeTeam);
+                awayScore.push(footballData[game].score.fullTime.awayTeam);
             }
         }
         return {
             date,
             home, 
             away,
-            score,
+            homeScore,
+            awayScore,
         };
     }, [footballData]);
+
+    function covidText(numberOfCases) {
+        switch(true) {
+            case numberOfCases > 400:
+                return [80, '#ff0000'];
+            case numberOfCases > 100:
+                return [70, '#cc0000'];
+            case numberOfCases > 50:
+                return [60, '#990000'];
+            case numberOfCases > 20:
+                return [40, '#660000'];
+            case numberOfCases > 10:
+                return [30, '#330000'];
+            default:
+                return [20, '#000000'];
+        }
+    }
+
 
     /* THE ACTUAL WEB PAGE */
     return (
         <>
             {/* Header */}
             <header className="Header">
-                <div>
-                    <h1>Data about Premier League and Covid in UK</h1>
+                <div className="Title">
+                    <h1>Covid and the English Premier League</h1>
+                    <p>On March 13, the EPL postponed the rest of 
+                        the 2019-20 season due to Covid. Here's some 
+                        data on the last several weeks before the 
+                        suspension.</p>
                 </div>
                 <nav>
                     <span>Matchday: </span>
@@ -115,19 +154,20 @@ function Home() {
                 <div className="Box">
                     <div className="FootballInfo">
                         <h3>Premier League Matches</h3>
-                        <div>
-                            {/* JS below */}
+                        <ul>
                             {home.map((item, i) => {
-                                return <div key={i}>{home[i]} {score[i]} {away[i]}</div>
+                                if (!item) return null;
+                                return <li key={i}>{home[i]} <span style={{fontSize: (homeScore[i]+5)*3}}>{homeScore[i]}</span>-<span style={{fontSize: (awayScore[i]+5)*3}}>{awayScore[i]}</span> {away[i]}</li>
                             })}
-                        </div>
+                        </ul>
                     </div>
                     <div className="CovidInfo">
                         <h3>Covid Cases</h3>
                         <div>
                             {covidArray.map((item, i) => {
+                                if (!item) return null;
                                 return item.date == date &&
-                                <div key={i}>{item.cases} cases</div>
+                                <div key={i} style={{fontSize: covidText(item.cases)[0], color: covidText(item.cases)[1]}}>{item.cases} cases</div>
                             })}
                         </div>
                     </div>

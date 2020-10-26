@@ -9,11 +9,22 @@
     padding: 0 25px;
   }
 
+  .Title {
+      border-bottom: black solid 2px;
+  }
+
+  .Header nav {
+      padding-top: 10px;
+  }
+
   .Header nav a {
-    color: black;
+    background-color: skyblue;
+    color: white;
     font-size: 18px;
     font-weight: normal;
-    margin: 0 10px;
+    margin: 0 8px;
+    padding: 0 2px;
+    border: black solid 2px;
     text-decoration: none;
   }
   
@@ -22,6 +33,14 @@
   }
 
   /* Home Styling */
+
+  .Home {
+      padding: 5px;
+  }
+
+  .Home h2 {
+      margin-left: 20px;
+  }
 
   .Box {
       display: flex;
@@ -33,32 +52,29 @@
     border: 2px solid black;
     flex-basis: 90%;
     margin-left: 20px;
-    padding: 70px;
+    padding: 40px;
     text-align: left;
+    font-size: 20px;
+  }
+
+  .FootballInfo span {
+    color: gray;
   }
 
   .CovidInfo {
     border: 2px solid black;
+    border-left: 0;
     flex-basis: 10%;
     margin-right: 20px;
-    padding: 70px;
+    padding: 40px;
     text-align: left;
   }
 
 .App {
-  
 }
 
 .Data {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
-
-.FootballData {
-    margin-left: 30px;
-}
-
-.CovidData {
-    margin-right: 30px;
 }
