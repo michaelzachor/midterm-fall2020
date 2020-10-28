@@ -19,12 +19,12 @@
 
   .Header nav a {
     background-color: skyblue;
+    border: black solid 2px;
     color: white;
     font-size: 18px;
     font-weight: normal;
     margin: 0 8px;
     padding: 0 2px;
-    border: black solid 2px;
     text-decoration: none;
   }
   
@@ -51,10 +51,10 @@
   .FootballInfo {
     border: 2px solid black;
     flex-basis: 90%;
+    font-size: 20px;
     margin-left: 20px;
     padding: 40px;
     text-align: left;
-    font-size: 20px;
   }
 
   .FootballInfo span {
@@ -65,16 +65,31 @@
     border: 2px solid black;
     border-left: 0;
     flex-basis: 10%;
+    font-size: 20px;
     margin-right: 20px;
     padding: 40px;
     text-align: left;
   }
 
-.App {
-}
-
 .Data {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+@media screen and (max-width: 750px) {
+  .Box {
+    flex-direction: column;
+  }
+
+  .CovidInfo {
+    border: 2px solid black;
+    border-top: 0;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .FootballInfo {
+    margin-right: 20px;
+  }
 }

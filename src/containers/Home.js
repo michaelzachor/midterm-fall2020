@@ -8,7 +8,7 @@ function Home() {
     const history = useHistory();
     const [covidData, setCovidData] = useState([]);
     const [footballData, setFootballData] = useState([]);
-    const [day, setDay] = useState(null);
+    const [day, setDay] = useState('25');
     let covidArray = [];
 
     /* GET FOOTBALL DATA */
@@ -20,7 +20,6 @@ function Home() {
         .then(function(response) {
             const footballResponse = response.data.matches;
             setFootballData(footballResponse);
-            
         })
         .catch(function(error) {
             console.warn(error);
@@ -46,30 +45,18 @@ function Home() {
     useEffect(() => {
         const searchParams = history.location.search;
         const urlParams = new URLSearchParams(searchParams);
-        const day = urlParams.get("matchday");
-        if (day) {
-            setDay(day);
+        const matchDay = urlParams.get("matchday");
+        if (matchDay) {
+            setDay(matchDay);
         }
-        console.log(day, "matchday");
     }, [history]);
 
+    /* ARRAY OF COVID DATA */
     {covidData.map((day, i) => {
-        if (i%11 == 0) {
+        if (i%11 === 0) {
             covidArray.push({date: day.Date.substr(0, 10), cases: day.Cases});
         }
     })}
-
-    const {
-        cases,
-    } = useMemo(() => {
-        let cases;
-        if (covidData) {
-            cases = covidArray
-        }
-        return {
-            cases
-        }
-    })
 
     /* KEEP TRACK OF USEFUL FOOTBALL DATA */
     const { 
@@ -84,14 +71,11 @@ function Home() {
         let away = [];
         let homeScore = [];
         let awayScore = [];
-
         if(footballData[0]) {
-            // console.log(footballData[0]);
             date = footballData[0].utcDate.substr(0, 10);
             for (var game in footballData) {
                 home.push(footballData[game].homeTeam.name);
                 away.push(footballData[game].awayTeam.name);
-                // score.push(`${footballData[game].score.fullTime.homeTeam}-${footballData[game].score.fullTime.awayTeam}` )
                 homeScore.push(footballData[game].score.fullTime.homeTeam);
                 awayScore.push(footballData[game].score.fullTime.awayTeam);
             }
@@ -105,6 +89,7 @@ function Home() {
         };
     }, [footballData]);
 
+    /* FUNCTION FOR COVID DATA TEXT SIZE */
     function covidText(numberOfCases) {
         switch(true) {
             case numberOfCases > 400:
@@ -122,11 +107,9 @@ function Home() {
         }
     }
 
-
     /* THE ACTUAL WEB PAGE */
     return (
         <>
-            {/* Header */}
             <header className="Header">
                 <div className="Title">
                     <h1>Covid and the English Premier League</h1>
@@ -142,11 +125,6 @@ function Home() {
                     <a href="/?matchday=27">27</a>
                     <a href="/?matchday=28">28</a>
                     <a href="/?matchday=29">29</a>
-                    {/* <a href="/?matchday=30">30</a>
-                    <a href="/?matchday=31">31</a>
-                    <a href="/?matchday=32">32</a>
-                    <a href="/?matchday=33">33</a>
-                    <a href="/?matchday=34">34</a> */}
                 </nav>
             </header>
             <main className="Home">
@@ -166,7 +144,7 @@ function Home() {
                         <div>
                             {covidArray.map((item, i) => {
                                 if (!item) return null;
-                                return item.date == date &&
+                                return item.date === date &&
                                 <div key={i} style={{fontSize: covidText(item.cases)[0], color: covidText(item.cases)[1]}}>{item.cases} cases</div>
                             })}
                         </div>
